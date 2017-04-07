@@ -1,20 +1,20 @@
 #------------#
-#-- AUTHOR --#
+#-- author --#
 #------------#
 ## Jason Schatz
-## Created: 12/28/2016
-## Last modified: 12/29/2016
+## Created:  12.28.2016
+## Modified: 12.29.2016
 
 
-#---------------#
-#-- FILE INFO --#
-#---------------#
+#-----------------#
+#-- description --#
+#-----------------#
 ## basic, frequently-used functions for reading,
 ## writing, and manipulating dataframes
 
 
 #----------------------#
-#-- IMPORT LIBRARIES --#
+#-- import libraries --#
 #----------------------#
 import csv
 import glob
@@ -44,20 +44,20 @@ function_name??  ##source code
 #----------------------#
 #-- create dataframe --#
 #----------------------#
-## empty dataframe
+## create empty dataframe
 columns = ['colname1', 'colname2', 'colname3']
 index = range(20)
 df1 = pd.DataFrame(index=index, columns=columns)
 
-## from array
+## df from array
 columns = ['colname1', 'colname2', 'colname3']
 data = np.array([np.random.normal(10, 3, 20)] * 3).T   # [np.random.normal(mean, stdev, n)] * ncols
 data = np.array([[3, 4, 2, 3], 
 	             [2, 1, 3, 2], 
 	             [3, 1, 3, 7]]).T
-df1 = pd.DataFrame(data, columns = columns)
+df1 = pd.DataFrame(data, columns=columns)
 
-## from data dictionary
+## df from data dictionary
 data = {'colname1': [3, 4, 2, 3],
         'colname2': [2, 1, 3, 2],
         'colname3': [3, 1, 3, 7]
@@ -85,7 +85,7 @@ xl.sheet_names
 df = xl.parse("values")
 
 ## write csv
-df1.to_csv(path1 + "written1.csv", index = False)
+df1.to_csv(path1 + "written1.csv", index=False)
 
 
 #---------------------#
@@ -106,7 +106,7 @@ df1.colname1.mean   # mean of colname1 in df1
 #-- (re)name columns --#
 #----------------------#
 df1.columns = ['colname1', 'colname2', 'colname3']          # rename all columns
-df1.rename(columns = {'colname1': 'new_name'}, inplace = True)   # rename specific column
+df1.rename(columns={'colname1': 'new_name'}, inplace=True)   # rename specific column
 names = df1.columns.values   # pull column names from 1st data frame
 df1.columns = names          # replace column names in 2nd data frame
 df1.columns = map(str.upper, df1.columns)   # column names to uppercase
@@ -122,11 +122,37 @@ df1[df1['colname1'] > 1]
 df1.query('colname2 < 5 & colname3 > 5')   # same as line above
 
 df1['colname1']   # select by column name
-df1[[1]]          # select by column index
-df1.iloc[2]       # select by row index
-df1.iloc[2:4]     # select by range of rows (not inclusive...returns row 2 and 3)
+df1.ix[:,0]          # select by column index
+df1.ix[2,:]       # select by row index
+df1.ix[2:4,:]     # select by range of rows (not inclusive...returns row 2 and 3)
 df1.at[0, 'colname2']    # label based lookup; [row, column]
 df1.iat[3, 1]            # index based lookup; first is row, second is column
+
+## subset to list of matching values
+df[df['colname1'].isin([3, 6])]
+
+
+#-------------------------------------------------#
+#-- create new dataframe from subset of columns --#
+#-------------------------------------------------#
+new_df = pd.concat([df1['colnam1'], df1['colname2']], axis=1)
+
+
+#----------------------------#
+#-- deal with missing data --#
+#----------------------------#
+## find the number of missing values per column
+df.isnull().sum()
+
+## eliminate rows or columns with missing values
+df.dropna()   # rows
+df.dropna(axis=1)   # columns
+
+## only drop rows where all columns are NA
+df.dropna(how='all')
+
+## drop rows where NA occurs in specific column(s)
+df.dropna(subset=['colname1'])
 
 
 #------------------------#
@@ -134,8 +160,8 @@ df1.iat[3, 1]            # index based lookup; first is row, second is column
 #------------------------#
 df1['col4'] = df1['colname2'] + df1['colname3']
 df1['e'] = df1['colname1']
-df1.drop('colname1', axis = 1, inplace = True)   # drop by column name
-df1.drop(df2.columns[[3]], axis = 1)      # drop by index
+df1.drop('colname1', axis=1, inplace=True)   # drop by column name
+df1.drop(df2.columns[[3]], axis=1)      # drop by index
 
 
 #-------------------------#
@@ -143,45 +169,59 @@ df1.drop(df2.columns[[3]], axis = 1)      # drop by index
 #-------------------------#
 names = df1.columns.values   #pull column names from 1st data frame
 df2.columns = names   #replace column names in 2nd data frame
-pd.concat([df1,df2], axis = 1)   #append columns
-pd.concat([df1,df2], axis = 0)   #append rows
+pd.concat([df1,df2], axis=1)   #append columns
+pd.concat([df1,df2], axis=0)   #append rows
 
 
 #---------------#
 #-- sort data --#
 #---------------#
-df1.sort_values(by = 'colname1')              # sort vertically by column
-df1.sort_index(axis = 1, ascending = False)   # sort horizontally by column
+df1.sort_values(by='colname1')              # sort vertically by column
+df1.sort_index(axis=1, ascending=False)   # sort horizontally by column
 
 
 #----------------#
 #-- merge data --#
 #----------------#
 ## left/right merge of two dataframes
-pd.merge(df1, df2, how = 'left',  left_on = ['colname2'], right_on = ['b'])   # keeps all x
-pd.merge(df1, df2, how = 'right', left_on = ['colname2'], right_on = ['b'])   # keeps all y
-pd.merge(df1, df2, how = 'inner', left_on = ['colname2'], right_on = ['b'])   # keeps only common indices
-pd.merge(df1, df2, how = 'outer', left_on = ['colname2'], right_on = ['b'])   # keeps all
+pd.merge(df1, df2, how='left',  left_on=['colname2'], right_on=['b'])   # keeps all x
+pd.merge(df1, df2, how='right', left_on=['colname2'], right_on=['b'])   # keeps all y
+pd.merge(df1, df2, how='inner', left_on=['colname2'], right_on=['b'])   # keeps only common indices
+pd.merge(df1, df2, how='outer', left_on=['colname2'], right_on=['b'])   # keeps all
 
 ## merge many files left/right with common column name
 import_list = glob.glob(path1 + '/*.csv')
 file_list = [pd.read_csv(file) for file in import_list]
-merged = reduce(lambda left, right: pd.merge(left, right, how='outer', on = 'a'), file_list)
+merged = reduce(lambda left, right: pd.merge(left, right, how='outer', on='a'), file_list)
 
 ## vertical merge files with same column names
-import_list = glob.glob(path1 + '/*.csv')
-file_list = [pd.read_csv(file) for file in import_list]
-merged = pd.concat(file_list)
+def vertical_merge(inpath, outpath):
+	'''performs vertical merge of all .csvs in 'inpath' folder and writes to file
+
+	Args:
+		inpath:  path to csvs (all must have same columns)
+		outpath: path for merged file to be written
+
+	Returns:
+		a single csv containing all vertically stacked individual csvs, written to outpath
+	'''
+	import_list = glob.glob(inpath + '/*.csv')
+	file_list = [pd.read_csv(file) for file in import_list]
+	merged = pd.concat(file_list)
+	merged.to_csv(outpath, index=False)
 
 
 #--------------------#
 #-- aggregate data --#
 #--------------------#
-df1.pivot_table(index = 'column1', values = 'values', aggfunc = np.mean)
+df1.pivot_table(index='column1', values='values', aggfunc=np.mean)
 counts = df1.groupby(['colname3']).agg(['count'])
-counts.reset_index(inplace = True)  
+counts.reset_index(inplace=True)
 counts.columns = counts.columns.droplevel()
 counts.columns = ['group', 'agg1', 'agg2', 'agg3']
+
+## specify which columns to aggregate
+counts = df1.groupby(['colname3'])[['colname1']].agg(['count'])
 
 
 #------------------#
@@ -210,11 +250,11 @@ df1[df1 == 1] = np.nan
 #---------------------------#
 #-- duplicate/unique data --#
 #---------------------------#
-df1.drop_duplicates('colname3', keep = 'first')   # keep first duplicate
-df1.drop_duplicates('colname3', keep = 'last')    # keep last duplicate
-df1.drop_duplicates('colname3', keep = False)     # remove all duplicates
-df1[df1.duplicated('colname3',  keep = False)]    # return all duplicated rows
-df1.colname3.unique()                             # return all unique elements/levels
+df1.drop_duplicates('colname3', keep='first')   # keep first duplicate
+df1.drop_duplicates('colname3', keep='last')    # keep last duplicate
+df1.drop_duplicates('colname3', keep=False)     # remove all duplicates
+df1[df1.duplicated('colname3',  keep=False)]    # return all duplicated rows
+df1.colname3.unique()                           # return all unique elements/levels
 
 
 #-----------------------#

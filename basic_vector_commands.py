@@ -1,14 +1,14 @@
 #------------#
-#-- AUTHOR --#
+#-- author --#
 #------------#
 ## Jason Schatz
-## Created: 12/29/2016
-## Last modified: 01/09/2017
+## Created:  12.29.2016
+## Modified: 01.09.2017
 
 
-#---------------#
-#-- FILE INFO --#
-#---------------#
+#-----------------#
+#-- description --#
+#-----------------#
 ## basic, frequently-used functions for reading,
 ## writing, and manipulating vector geometry files
 
@@ -146,8 +146,11 @@ template_raster = gdal.Open(template_path)
 shape_datasource = ogr.Open(shape_path)
 shape_layer = shape_datasource.GetLayer()
 
-raster_dataset = new_raster_from_base(template_raster, raster_out, 'GTiff',
-                                      -1, gdal.GDT_Int32)
+raster_dataset = new_raster_from_base(template_raster, 
+                                      raster_out, 
+                                     'GTiff',
+                                     -1, 
+                                     gdal.GDT_Int32)
 band = raster_dataset.GetRasterBand(1)
 nodata = band.GetNoDataValue()
 

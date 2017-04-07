@@ -1,14 +1,14 @@
 #------------#
-#-- AUTHOR --#
+#-- author --#
 #------------#
 ## Jason Schatz
-## Created: 12/29/2016
-## Last modified: 01/09/2017
+## Created:  12.29.2016
+## Modified: 01.09.2017
 
 
-#---------------#
-#-- FILE INFO --#
-#---------------#
+#-----------------#
+#-- description --#
+#-----------------#
 ## basic, frequently-used functions for reading,
 ## writing, and manipulating raster data
 
@@ -112,10 +112,10 @@ which_stats = ['mean', 'min', 'max', 'median', 'majority', 'sum',
 
 stats = zonal_stats(poly_path,
                     raster_path,
-                    stats = which_stats,
-                    band = 1, 
-                    all_touched = True, 
-                    geojson_out = True)
+                    stats=which_stats,
+                    band=1, 
+                    all_touched=True, 
+                    geojson_out=True)
 
 means  = [stats[j]['properties']['mean'] for j in range(len(stats))]
 names  = [stats[j]['properties']['NAMELSAD'] for j in range(len(stats))]
@@ -153,7 +153,7 @@ srs = osr.SpatialReference()
 srs.ImportFromEPSG(4326)
 
 outpath = 'P:/Jason/GIS/myraster.tif'
-output_raster = gdal.GetDriverByName('GTiff').Create(outpath,ncols, nrows, 1 ,gdal.GDT_Float32)
+output_raster = gdal.GetDriverByName('GTiff').Create(outpath, ncols, nrows, 1, gdal.GDT_Float32)
 output_raster.SetGeoTransform(geotransform)
 output_raster.SetProjection(srs.ExportToWkt()) 
 output_raster.GetRasterBand(1).WriteArray(z)
@@ -211,22 +211,31 @@ lons, lats = np.meshgrid(lons, lats)
 
 ## draw figure
 fig = plt.figure(figsize=(12, 6))
-m = Basemap(width = 2000000, height = 1500000,
-            resolution = 'l', projection = 'stere',
-            lat_ts = 40, lat_0 = np.mean(np.array([ymin, ymax])), lon_0 = np.mean(np.array([xmin, xmax])))
-xx, yy = m(lons,lats)   # convert original coordinates to map projection
+m = Basemap(width=2000000, 
+            height=1500000,
+            resolution='l', 
+            projection='stere',
+            lat_ts=40, 
+            lat_0=np.mean(np.array([ymin, ymax])), 
+            lon_0=np.mean(np.array([xmin, xmax])))
+xx, yy = m(lons, lats)   # convert original coordinates to map projection
 
-m.drawparallels(np.arange(-80., 81., 10.), labels = [1,0,0,0], fontsize = 10)
-m.drawmeridians(np.arange(-180., 181., 10.), labels = [0,0,0,1], fontsize = 10)
+m.drawparallels(np.arange(-80., 81., 10.), labels=[1,0,0,0], fontsize=10)
+m.drawmeridians(np.arange(-180., 181., 10.), labels=[0,0,0,1], fontsize=10)
 m.drawcoastlines()
 m.drawcountries()
 m.drawstates()
-m.readshapefile('P:/Jason/GIS/Census/geometries/NM_counties', 'NM_counties', color = 'black')
-m.readshapefile('P:/Jason/GIS/Political_boundaries/NM_state_boundary/NM_state', 'NM_state', color = 'black', linewidth = 3)
+m.readshapefile('P:/Jason/GIS/Census/geometries/NM_counties', 
+                'NM_counties', 
+                color='black')
+m.readshapefile('P:/Jason/GIS/Political_boundaries/NM_state_boundary/NM_state', 
+                'NM_state', 
+                color='black', 
+                linewidth=3)
 
 ## define color and colorbar
 cs = m.pcolor(xx, yy, np.squeeze(data))
-cbar = m.colorbar(cs, location = 'bottom', pad = "10%")
+cbar = m.colorbar(cs, location='bottom', pad='10%')
 
 ## title
 plt.title('plot title')
